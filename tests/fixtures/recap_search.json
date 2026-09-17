@@ -1,0 +1,63 @@
+{
+  "count": 523,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "docket_id": 74762551,
+      "caseName": "Rorke-Giorgi v. Ulta Beauty, Inc",
+      "case_name_full": "",
+      "court": "California Northern District Court",
+      "court_id": "cand",
+      "docketNumber": "3:26-cv-10046",
+      "docket_absolute_url": "/docket/74762551/rorke-giorgi-v-ulta-beauty-inc/",
+      "dateFiled": "2026-09-08",
+      "dateTerminated": null,
+      "suitNature": null,
+      "cause": "",
+      "assignedTo": "Araceli Martinez-Olguin",
+      "juryDemand": "Plaintiff",
+      "party": ["Deborah Rorke-Giorgi", "Ulta Beauty, Inc"],
+      "firm": ["Siri & Glimstad LLP"],
+      "recap_documents": [
+        {
+          "short_description": "Complaint",
+          "description": "",
+          "snippet": "Case 3:26-cv-10046-ASK   Document 1   Filed 09/08/26   Page 1 of 37"
+        }
+      ]
+    },
+    {
+      "docket_id": 74739752,
+      "caseName": "Weatherford v. Metabase, Inc.",
+      "court": "California Northern District Court",
+      "court_id": "cand",
+      "docketNumber": "4:26-cv-09406",
+      "docket_absolute_url": "/docket/74739752/weatherford-v-metabase-inc/",
+      "dateFiled": "2026-09-02",
+      "suitNature": "380 Personal Property: Other",
+      "cause": "28:1332 Diversity-Breach of Contract",
+      "assignedTo": "Alex G. Tse",
+      "party": ["Cody Weatherford", "Metabase, Inc."],
+      "firm": ["Kopelowitz Ostrow P.A."],
+      "recap_documents": [
+        {
+          "short_description": "Complaint for Class Action",
+          "description": "CLASS ACTION COMPLAINT against Metabase, Inc.",
+          "snippet": "brings this <mark>class action</mark> on behalf of all others similarly situated whose personally identifiable information was exposed in the data breach"
+        }
+      ]
+    },
+    {
+      "docket_id": 999,
+      "caseName": "United States v. Smith",
+      "court": "California Northern District Court",
+      "court_id": "cand",
+      "docketNumber": "3:26-cr-00123",
+      "docket_absolute_url": "/docket/999/united-states-v-smith/",
+      "dateFiled": "2026-08-30",
+      "suitNature": "510 Habeas Corpus",
+      "recap_documents": []
+    }
+  ]
+}

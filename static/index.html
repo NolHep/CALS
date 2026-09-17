@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CALS &middot; Class Action Lawsuit Search</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%E2%9A%96%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <h1>CALS</h1>
+    <p class="tagline">Find federal class action lawsuits filed in your area.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <form id="search-form" class="panel" autocomplete="off">
+    <div class="row">
+      <label class="field grow">
+        <span>Your area</span>
+        <input id="location" name="location" placeholder="ZIP code or state, e.g. 94110 or Texas" required>
+      </label>
+      <label class="field">
+        <span>Filed within</span>
+        <select id="days" name="days">
+          <option value="90">Last 90 days</option>
+          <option value="180">Last 6 months</option>
+          <option value="365" selected>Last year</option>
+          <option value="1095">Last 3 years</option>
+        </select>
+      </label>
+    </div>
+
+    <label class="field">
+      <span>Keywords <em>(optional)</em></span>
+      <input id="keywords" name="keywords" placeholder="a company, product or statute">
+    </label>
+
+    <fieldset class="field">
+      <legend>Topics <em>(optional)</em></legend>
+      <div id="topics" class="chips"></div>
+    </fieldset>
+
+    <div class="row controls">
+      <label class="checkbox">
+        <input type="checkbox" id="strict">
+        <span>Only strong matches</span>
+      </label>
+      <label class="checkbox">
+        <input type="checkbox" id="appeals">
+        <span>Include the appeals court</span>
+      </label>
+      <button type="submit" id="submit">Search</button>
+    </div>
+  </form>
+
+  <section id="status" class="status" hidden></section>
+  <section id="summary" class="summary" hidden></section>
+  <section id="results" class="results"></section>
+</main>
+
+<footer class="wrap footnote">
+  <p>
+    Docket data from the
+    <a href="https://www.courtlistener.com/" target="_blank" rel="noopener">CourtListener</a>
+    RECAP archive, maintained by the Free Law Project. CALS surfaces public
+    court records and is not legal advice. Being in a district where a case
+    was filed does not by itself make you a class member &mdash; read the
+    complaint or contact the listed firm.
+  </p>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
