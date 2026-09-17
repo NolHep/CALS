@@ -9,12 +9,46 @@
   var appealsBox = document.getElementById("appeals");
   var submitButton = document.getElementById("submit");
   var topicsBox = document.getElementById("topics");
+  var countriesBox = document.getElementById("countries");
+  var federalWrap = document.getElementById("federal-wrap");
+  var federalBox = document.getElementById("federal");
+  var windowLabel = document.getElementById("window-label");
   var statusBox = document.getElementById("status");
   var summaryBox = document.getElementById("summary");
   var resultsBox = document.getElementById("results");
 
   var topicLabels = {};
   var selectedTopics = [];
+  var country = "CA";
+
+  var PLACEHOLDERS = {
+    CA: "Postal code, province or city, e.g. M5V 3A8 or Toronto",
+    US: "ZIP code or state, e.g. 94110 or Texas"
+  };
+
+  function applyCountry(next) {
+    country = next;
+    Array.prototype.forEach.call(
+      countriesBox.querySelectorAll(".chip"),
+      function (chip) {
+        chip.setAttribute(
+          "aria-pressed", chip.dataset.country === next ? "true" : "false"
+        );
+      }
+    );
+    locationInput.placeholder = PLACEHOLDERS[next];
+    // CanLII indexes decisions; RECAP indexes filings.
+    windowLabel.textContent = next === "CA" ? "Decided within" : "Filed within";
+    // The Federal Court option is Canada-only.
+    federalWrap.hidden = next !== "CA";
+  }
+
+  countriesBox.addEventListener("click", function (event) {
+    var chip = event.target.closest(".chip");
+    if (chip && chip.dataset.country !== country) {
+      applyCountry(chip.dataset.country);
+    }
+  });
 
   function setStatus(message, kind) {
     if (!message) {
@@ -110,7 +144,11 @@
     var meta = document.createElement("div");
     meta.className = "meta";
     addMeta(meta, item.court);
-    addMeta(meta, "Filed " + formatDate(item.date_filed));
+    addMeta(
+      meta,
+      (item.source === "canlii" ? "Decided " : "Filed ") +
+        formatDate(item.date_filed)
+    );
     addMeta(meta, item.docket_number);
     addMeta(meta, item.nature_of_suit);
     meta.appendChild(confidenceBadge(item.confidence));
@@ -159,7 +197,7 @@
       var empty = document.createElement("p");
       empty.className = "empty";
       empty.textContent =
-        "No class actions matched in " + data.query.state_name +
+        "No class actions matched in " + data.query.region_name +
         " for that period. Try a longer window or fewer filters.";
       resultsBox.appendChild(empty);
       summaryBox.hidden = true;
@@ -168,12 +206,14 @@
 
     summaryBox.hidden = false;
     var courts = data.query.courts.length;
+    var isCanada = data.query.country === "CA";
     summaryBox.textContent =
       "Showing " + data.cases.length + " case" +
       (data.cases.length === 1 ? "" : "s") + " from " + courts +
-      " federal court" + (courts === 1 ? "" : "s") + " serving " +
-      data.query.state_name + ", filed since " + data.query.filed_after +
-      (data.cached ? " (cached)" : "") + ".";
+      (isCanada ? " court" : " federal court") + (courts === 1 ? "" : "s") +
+      " serving " + data.query.region_name +
+      (isCanada ? ", decided since " : ", filed since ") +
+      data.query.filed_after + (data.cached ? " (cached)" : "") + ".";
 
     data.cases.forEach(function (item) {
       resultsBox.appendChild(renderCase(item));
@@ -192,10 +232,12 @@
 
     var params = new URLSearchParams({
       location: location,
+      country: country,
       keywords: keywordsInput.value.trim(),
       days: daysSelect.value,
       min_confidence: strictBox.checked ? "0.6" : "0.35",
       include_appeals: appealsBox.checked ? "true" : "false",
+      include_federal: federalBox.checked ? "true" : "false",
       topics: selectedTopics.join(",")
     });
 
@@ -220,5 +262,6 @@
       });
   });
 
+  applyCountry("CA");
   loadTopics();
 })();

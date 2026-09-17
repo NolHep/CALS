@@ -27,6 +27,9 @@
 
 * { box-sizing: border-box; }
 
+/* `display: flex` on .checkbox would otherwise beat the hidden attribute. */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   background: var(--bg);

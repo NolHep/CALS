@@ -95,7 +95,9 @@ TOPICS: tuple[Topic, ...] = (
                      "privacy", "wiretap"),
         match_terms=("data breach", "personally identifiable", "privacy",
                      "wiretap", "biometric", "bipa", "ccpa", "pii",
-                     "unauthorized access", "session replay"),
+                     "unauthorized access", "session replay",
+                     "vie privee", "vie priv\u00e9e", "renseignements personnels",
+                     "atteinte \u00e0 la vie", "protection des renseignements"),
     ),
     Topic(
         key="consumer",
@@ -104,7 +106,9 @@ TOPICS: tuple[Topic, ...] = (
                      "mislabeled"),
         match_terms=("false advertis", "deceptive", "consumer protection",
                      "mislabel", "unfair competition", "warranty",
-                     "misrepresent", "unjust enrichment"),
+                     "misrepresent", "unjust enrichment",
+                     "consommateur", "publicit\u00e9 trompeuse",
+                     "pratique interdite", "garantie"),
     ),
     Topic(
         key="employment",
@@ -113,7 +117,9 @@ TOPICS: tuple[Topic, ...] = (
                      "wage and hour", "employment discrimination"),
         match_terms=("fair labor standards", "flsa", "overtime",
                      "wage and hour", "minimum wage", "discriminat",
-                     "misclassif"),
+                     "misclassif", "employment standards",
+                     "heures suppl\u00e9mentaires", "salaire", "cong\u00e9diement",
+                     "normes du travail"),
         distinctive_nos=("710", "442"),
     ),
     Topic(
@@ -122,7 +128,8 @@ TOPICS: tuple[Topic, ...] = (
         query_terms=("securities fraud", "securities exchange act",
                      "shareholder"),
         match_terms=("securities", "shareholder", "investor", "10b-5",
-                     "misleading statements", "stock"),
+                     "misleading statements", "stock", "secondary market",
+                     "valeurs mobili\u00e8res", "actionnaire", "investisseur"),
         distinctive_nos=("850",),
     ),
     Topic(
@@ -130,7 +137,9 @@ TOPICS: tuple[Topic, ...] = (
         label="Antitrust & price fixing",
         query_terms=("antitrust", "price fixing", "sherman act", "monopoly"),
         match_terms=("antitrust", "price fixing", "price-fixing", "sherman",
-                     "clayton act", "monopol", "conspiracy to fix"),
+                     "clayton act", "monopol", "conspiracy to fix",
+                     "competition act", "concurrence", "fixation des prix",
+                     "complot"),
         distinctive_nos=("410",),
     ),
     Topic(
@@ -138,7 +147,8 @@ TOPICS: tuple[Topic, ...] = (
         label="Defective products & drugs",
         query_terms=("product liability", "defective", "recall"),
         match_terms=("product liability", "defect", "recall", "failure to warn",
-                     "design defect"),
+                     "design defect", "produit d\u00e9fectueux", "vice cach\u00e9",
+                     "rappel de produit", "responsabilit\u00e9 du fabricant"),
         distinctive_nos=("365", "245"),
     ),
     Topic(
@@ -148,7 +158,8 @@ TOPICS: tuple[Topic, ...] = (
                      "consumer credit"),
         match_terms=("overdraft", "debt collection", "fdcpa", "tila",
                      "truth in lending", "junk fee", "interest rate",
-                     "consumer credit"),
+                     "consumer credit", "frais bancaires", "carte de cr\u00e9dit",
+                     "institution financi\u00e8re", "pr\u00eat"),
         distinctive_nos=("480",),
     ),
     Topic(
@@ -157,7 +168,8 @@ TOPICS: tuple[Topic, ...] = (
         query_terms=("insurance", "denial of benefits", "erisa",
                      "medical billing"),
         match_terms=("insurance", "insurer", "benefits", "erisa",
-                     "medical bill", "surprise billing", "premium"),
+                     "medical bill", "surprise billing", "premium",
+                     "assurance", "assureur", "prestations", "prime"),
         distinctive_nos=("791",),
     ),
 )
@@ -229,3 +241,86 @@ def topics_for(case: dict) -> list[str]:
         elif code and code in topic.distinctive_nos:
             hits.append(topic.key)
     return hits
+
+
+# --------------------------------------------------------------------------
+# Canada
+# --------------------------------------------------------------------------
+# Canadian terminology differs from the US, and differs again between Quebec
+# and the common law provinces. Quebec calls the procedure an "action
+# collective" (until 2016, "recours collectif") and the gateway step
+# "authorization"; everywhere else it is a "class proceeding" that must be
+# "certified". Both vocabularies, in both official languages, matter here.
+_CA_STRONG_PHRASES: tuple[tuple[str, float], ...] = (
+    ("class proceeding", 0.60),
+    ("class action", 0.55),
+    ("action collective", 0.60),
+    ("recours collectif", 0.60),
+    ("class proceedings act", 0.55),
+    ("certification motion", 0.50),
+    ("motion for certification", 0.50),
+    ("certified as a class", 0.55),
+    ("representative plaintiff", 0.50),
+    ("representative defendant", 0.35),
+    ("demande d'autorisation d'exercer", 0.55),
+    ("autorisation d'exercer une action collective", 0.60),
+    ("common issues", 0.35),
+    ("opt out", 0.25),
+    ("opt-out", 0.25),
+    ("class member", 0.35),
+    ("membre du groupe", 0.35),
+    ("settlement approval", 0.30),
+    ("class counsel", 0.40),
+    ("cpa", 0.15),
+)
+
+# Decisions that merely cite a class action in passing tend to be about
+# something else entirely; these titles are a weak negative signal.
+_CA_NEGATIVE_MARKERS: tuple[str, ...] = (
+    "r. v.",
+    "r v ",
+    "regina v",
+    "her majesty the queen v",
+    "his majesty the king v",
+)
+
+
+def _ca_searchable_text(case: dict) -> str:
+    parts = [
+        str(case.get("title") or ""),
+        str(case.get("citation") or ""),
+        str(case.get("keywords") or ""),
+        str(case.get("docketNumber") or ""),
+    ]
+    return " ".join(parts).lower()
+
+
+def is_unlikely_class_action_ca(case: dict) -> bool:
+    """True for criminal-style citations, which are never class proceedings."""
+    title = str(case.get("title") or "").lower().strip()
+    return any(title.startswith(marker) for marker in _CA_NEGATIVE_MARKERS)
+
+
+def class_action_confidence_ca(case: dict) -> tuple[float, list[str]]:
+    """Score 0.0-1.0 that a Canadian decision is a class proceeding."""
+    if is_unlikely_class_action_ca(case):
+        return 0.0, []
+
+    text = _ca_searchable_text(case)
+    score = 0.0
+    reasons: list[str] = []
+    for phrase, weight in _CA_STRONG_PHRASES:
+        if phrase in text:
+            score += weight
+            reasons.append(f"mentions “{phrase}”")
+    return min(score, 1.0), reasons
+
+
+def topics_for_ca(case: dict) -> list[str]:
+    """Tag a Canadian decision using its title and CanLII keywords."""
+    text = _ca_searchable_text(case)
+    return [
+        topic.key
+        for topic in TOPICS
+        if any(term in text for term in topic.terms_for_matching())
+    ]

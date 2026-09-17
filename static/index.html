@@ -11,19 +11,27 @@
 <header class="masthead">
   <div class="wrap">
     <h1>CALS</h1>
-    <p class="tagline">Find federal class action lawsuits filed in your area.</p>
+    <p class="tagline">Find class action lawsuits in your area.</p>
   </div>
 </header>
 
 <main class="wrap">
   <form id="search-form" class="panel" autocomplete="off">
+    <fieldset class="field">
+      <legend>Country</legend>
+      <div class="chips" id="countries">
+        <button type="button" class="chip" data-country="CA" aria-pressed="true">Canada</button>
+        <button type="button" class="chip" data-country="US" aria-pressed="false">United States</button>
+      </div>
+    </fieldset>
+
     <div class="row">
       <label class="field grow">
         <span>Your area</span>
-        <input id="location" name="location" placeholder="ZIP code or state, e.g. 94110 or Texas" required>
+        <input id="location" name="location" placeholder="Postal code, province or city, e.g. M5V 3A8 or Toronto" required>
       </label>
       <label class="field">
-        <span>Filed within</span>
+        <span id="window-label">Decided within</span>
         <select id="days" name="days">
           <option value="90">Last 90 days</option>
           <option value="180">Last 6 months</option>
@@ -52,6 +60,10 @@
         <input type="checkbox" id="appeals">
         <span>Include the appeals court</span>
       </label>
+      <label class="checkbox" id="federal-wrap">
+        <input type="checkbox" id="federal" checked>
+        <span>Include the Federal Court</span>
+      </label>
       <button type="submit" id="submit">Search</button>
     </div>
   </form>
@@ -62,13 +74,21 @@
 </main>
 
 <footer class="wrap footnote">
-  <p>
-    Docket data from the
+  <p id="source-note">
+    Canadian decisions come from
+    <a href="https://www.canlii.org/" target="_blank" rel="noopener">CanLII</a>,
+    the Canadian Legal Information Institute. US dockets come from the
     <a href="https://www.courtlistener.com/" target="_blank" rel="noopener">CourtListener</a>
-    RECAP archive, maintained by the Free Law Project. CALS surfaces public
-    court records and is not legal advice. Being in a district where a case
-    was filed does not by itself make you a class member &mdash; read the
-    complaint or contact the listed firm.
+    RECAP archive, maintained by the Free Law Project.
+  </p>
+  <p>
+    CALS surfaces public court records and is not legal advice. Living where a
+    case was filed does not by itself make you a class member &mdash; read the
+    decision or contact class counsel. For Canada, also check the
+    <a href="https://cbaapps.org/ClassAction/Search.aspx" target="_blank" rel="noopener">CBA
+    National Class Action Database</a> and, in Quebec, the
+    <a href="https://www.registredesactionscollectives.quebec/" target="_blank" rel="noopener">Registre
+    des actions collectives</a>.
   </p>
 </footer>
 
