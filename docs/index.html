@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Find class action lawsuits in your Canadian province. Shows which courts hear class proceedings where you live and searches the official registries.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%E2%9A%96%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<style>
+  /* Baseline the Artifact host normally supplies. */
+  html { -webkit-text-size-adjust: 100%; }
+  :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  body { margin: 0; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+<title>Canadian Class Action Registry</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+</head>
+<body>
+<style>
+  :root {
+    --paper: #eff1f4;
+    --surface: #ffffff;
+    --surface-2: #f7f8fa;
+    --ink: #1b2430;
+    --muted: #5d6b7a;
+    --rule: #d5dbe3;
+    --accent: #a8322a;
+    --accent-soft: #f7eae8;
+    --seal: #2f4a63;
+    --seal-soft: #e7edf3;
+    --ok: #1f6b45;
+    --ok-soft: #e4f1ea;
+    --warn: #8a5a12;
+    --warn-soft: #f9eed9;
+    --shadow: 0 1px 2px rgba(27, 36, 48, .06), 0 8px 24px -16px rgba(27, 36, 48, .3);
+    --display: "Spectral", Georgia, "Times New Roman", serif;
+    --body: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #11161c;
+      --surface: #19202a;
+      --surface-2: #1f2832;
+      --ink: #e7ecf2;
+      --muted: #94a3b3;
+      --rule: #2b3640;
+      --accent: #e28a7e;
+      --accent-soft: #2f2220;
+      --seal: #8fb3d2;
+      --seal-soft: #1e2a36;
+      --ok: #6fc79b;
+      --ok-soft: #16281f;
+      --warn: #e0b06a;
+      --warn-soft: #2c2214;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .8);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #11161c;
+    --surface: #19202a;
+    --surface-2: #1f2832;
+    --ink: #e7ecf2;
+    --muted: #94a3b3;
+    --rule: #2b3640;
+    --accent: #e28a7e;
+    --accent-soft: #2f2220;
+    --seal: #8fb3d2;
+    --seal-soft: #1e2a36;
+    --ok: #6fc79b;
+    --ok-soft: #16281f;
+    --warn: #e0b06a;
+    --warn-soft: #2c2214;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .8);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--body); font-size: 16px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding-inline: 20px; }
+
+  /* ---- masthead ---- */
+  .masthead { background: var(--surface); border-bottom: 1px solid var(--rule); }
+  .masthead .wrap { padding-block: 30px 24px; }
+  .eyebrow {
+    font-size: 12px; font-weight: 700; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 8px;
+  }
+  h1 {
+    font-family: var(--display); font-weight: 600; font-size: clamp(30px, 5vw, 42px);
+    line-height: 1.1; margin: 0 0 10px; text-wrap: balance; letter-spacing: -.01em;
+  }
+  .standfirst {
+    margin: 0; color: var(--muted); font-size: 17px; max-width: 60ch;
+  }
+
+  /* ---- generic panel ---- */
+  .panel {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 12px; box-shadow: var(--shadow);
+  }
+  section { margin-block: 32px; }
+  h2 {
+    font-family: var(--display); font-weight: 600; font-size: 22px;
+    margin: 0 0 4px; letter-spacing: -.01em;
+  }
+  .section-note { margin: 0 0 16px; color: var(--muted); font-size: 15px; max-width: 66ch; }
+
+  /* ---- province rail ---- */
+  .rail { display: flex; flex-wrap: wrap; gap: 7px; }
+  .prov {
+    font: inherit; font-size: 14px; cursor: pointer; white-space: nowrap;
+    background: var(--surface); color: var(--ink); border: 1px solid var(--rule);
+    border-radius: 7px; padding: 7px 12px; transition: background .12s, border-color .12s;
+  }
+  .prov:hover { border-color: var(--seal); }
+  .prov[aria-pressed="true"] {
+    background: var(--seal); border-color: var(--seal); color: var(--surface);
+    font-weight: 600;
+  }
+  :root[data-theme="dark"] .prov[aria-pressed="true"],
+  .prov[aria-pressed="true"] { color: #fff; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .prov[aria-pressed="true"] { color: #0f151b; }
+  }
+  :root[data-theme="dark"] .prov[aria-pressed="true"] { color: #0f151b; }
+
+  /* ---- courts panel ---- */
+  .courts { padding: 20px; margin-top: 14px; }
+  .court-row {
+    display: flex; gap: 14px; align-items: baseline;
+    padding-block: 11px; border-top: 1px solid var(--rule);
+  }
+  .court-row:first-of-type { border-top: 0; padding-top: 0; }
+  .court-role {
+    flex: 0 0 132px; font-size: 12px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .court-name { flex: 1 1 200px; font-weight: 600; }
+  .cite {
+    font-family: var(--mono); font-size: 13px; color: var(--seal);
+    background: var(--seal-soft); padding: 2px 7px; border-radius: 5px;
+    white-space: nowrap;
+  }
+
+  /* ---- topics ---- */
+  .topics { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+  .topic {
+    font: inherit; font-size: 13.5px; cursor: pointer;
+    background: var(--surface); color: var(--ink);
+    border: 1px solid var(--rule); border-radius: 999px; padding: 6px 13px;
+  }
+  .topic[aria-pressed="true"] {
+    background: var(--accent-soft); border-color: var(--accent);
+    color: var(--accent); font-weight: 600;
+  }
+
+  /* ---- source cards ---- */
+  .sources { display: grid; gap: 14px; }
+  .source { padding: 20px; }
+  .source-head {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .source-head h3 {
+    font-family: var(--display); font-size: 19px; font-weight: 600; margin: 0;
+  }
+  .tag {
+    font-size: 11.5px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; padding: 3px 9px; border-radius: 999px;
+  }
+  .tag.filings { background: var(--ok-soft); color: var(--ok); }
+  .tag.decisions { background: var(--seal-soft); color: var(--seal); }
+  .tag.partial { background: var(--warn-soft); color: var(--warn); }
+  .source p { margin: 0 0 12px; color: var(--muted); font-size: 15px; }
+  .source dl {
+    margin: 0 0 14px; display: grid; grid-template-columns: auto 1fr;
+    gap: 4px 12px; font-size: 14px;
+  }
+  .source dt { color: var(--muted); }
+  .source dd { margin: 0; }
+
+  .go {
+    display: inline-flex; align-items: center; gap: 8px;
+    font: inherit; font-weight: 600; font-size: 15px; cursor: pointer;
+    background: var(--accent); color: #fff; border: 0;
+    border-radius: 8px; padding: 10px 18px; text-decoration: none;
+  }
+  .go:hover { filter: brightness(1.08); }
+  .go.secondary {
+    background: transparent; color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+  .query-preview {
+    font-family: var(--mono); font-size: 12.5px; color: var(--muted);
+    background: var(--surface-2); border: 1px solid var(--rule);
+    border-radius: 7px; padding: 9px 11px; margin-top: 12px;
+    overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+  }
+  .hint { font-size: 13.5px; color: var(--muted); margin: 10px 0 0; }
+  .hint strong { color: var(--ink); font-weight: 600; }
+
+  /* ---- US live search ---- */
+  .us-form { display: grid; gap: 12px; padding: 20px; }
+  .field-row { display: flex; flex-wrap: wrap; gap: 12px; }
+  label.f { display: grid; gap: 5px; flex: 1 1 190px; }
+  label.f > span {
+    font-size: 12px; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  select, input[type="text"], input[type="password"] {
+    font: inherit; font-size: 15px; color: var(--ink); background: var(--surface-2);
+    border: 1px solid var(--rule); border-radius: 8px; padding: 9px 11px; width: 100%;
+  }
+  select:focus, input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .results { display: grid; gap: 11px; margin-top: 16px; }
+  .case { padding: 16px 18px; }
+  .case h4 { margin: 0 0 6px; font-size: 16px; font-weight: 600; line-height: 1.35; }
+  .case h4 a { color: var(--ink); text-decoration: none; }
+  .case h4 a:hover { color: var(--accent); text-decoration: underline; }
+  .case-meta {
+    display: flex; flex-wrap: wrap; gap: 5px 13px;
+    font-size: 13px; color: var(--muted);
+  }
+  .case-meta .cite { background: none; padding: 0; color: var(--muted); }
+  .status {
+    padding: 12px 15px; border-radius: 9px; font-size: 14.5px; margin-top: 14px;
+    background: var(--warn-soft); color: var(--warn); border: 1px solid var(--rule);
+  }
+  .status.info { background: var(--seal-soft); color: var(--seal); }
+
+  /* ---- coverage table ---- */
+  .table-scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; min-width: 520px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-size: 12px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+  tbody tr:last-child td { border-bottom: 0; }
+
+  footer { border-top: 1px solid var(--rule); margin-top: 40px; background: var(--surface); }
+  footer .wrap { padding-block: 22px 34px; }
+  footer p { margin: 0 0 10px; font-size: 13.5px; color: var(--muted); max-width: 72ch; }
+  a { color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  @media (max-width: 560px) {
+    .court-role { flex-basis: 100%; }
+    .court-row { flex-direction: column; gap: 4px; }
+  }
+</style>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">Class action lawsuits &middot; Canada</p>
+    <h1>Where to find a class action near you</h1>
+    <p class="standfirst">
+      Pick your province. This shows the courts that hear class proceedings
+      where you live, and sends you into the official registries with the
+      right search already built.
+    </p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <h2>Your province</h2>
+    <p class="section-note">
+      A class proceeding is started in the superior court of the province where
+      you live. The Federal Court hears claims against the federal Crown from
+      anywhere in Canada.
+    </p>
+    <div class="rail" id="provinces"></div>
+
+    <div class="panel courts" id="courts"></div>
+  </section>
+
+  <section>
+    <h2>What is it about?</h2>
+    <p class="section-note">
+      Optional. Adding a subject narrows the searches below, in English and in
+      French &mdash; Quebec proceedings are usually written in French.
+    </p>
+    <div class="topics" id="topics"></div>
+  </section>
+
+  <section>
+    <h2>Official sources</h2>
+    <p class="section-note" id="source-intro"></p>
+    <div class="sources" id="sources"></div>
+  </section>
+
+  <section>
+    <h2>What each source actually covers</h2>
+    <p class="section-note">
+      No single Canadian source is complete. Coverage begins at different dates
+      and each has a different idea of what counts as a record.
+    </p>
+    <div class="panel table-scroll">
+      <table>
+        <thead>
+          <tr><th>Source</th><th>Holds</th><th>From</th><th>Catch</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CanLII</td>
+            <td>Court decisions</td>
+            <td>Varies by court</td>
+            <td>A case appears only once a judge has written something. A claim filed last week is invisible.</td>
+          </tr>
+          <tr>
+            <td>CBA National Class Action Database</td>
+            <td>Filed proceedings and documents</td>
+            <td>1 January 2007</td>
+            <td>Voluntary. Lawyers submit to it, so it is not a complete list of every class action in Canada.</td>
+          </tr>
+          <tr>
+            <td>Registre des actions collectives</td>
+            <td>Filed proceedings in Quebec</td>
+            <td>1 January 2009</td>
+            <td>Official and thorough, but Quebec only.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>United States</h2>
+    <p class="section-note">
+      US federal dockets are searchable live from this page, because
+      CourtListener publishes an open API that a browser may call. No Canadian
+      registry offers that, which is why the sections above link out instead of
+      searching here.
+    </p>
+
+    <div class="panel us-form">
+      <div class="field-row">
+        <label class="f" for="us-state">
+          <span>State</span>
+          <select id="us-state"></select>
+        </label>
+        <label class="f" for="us-window">
+          <span>Filed within</span>
+          <select id="us-window">
+            <option value="90">Last 90 days</option>
+            <option value="180">Last 6 months</option>
+            <option value="365" selected>Last year</option>
+          </select>
+        </label>
+      </div>
+      <label class="f" for="us-token">
+        <span>CourtListener token &mdash; optional</span>
+        <input type="password" id="us-token" autocomplete="off"
+               placeholder="Raises the limit from 125 searches a day to 5,000 an hour">
+      </label>
+      <div class="actions">
+        <button class="go" type="button" id="us-search">Search US dockets</button>
+      </div>
+    </div>
+
+    <div id="us-status" class="status" hidden></div>
+    <div id="us-results" class="results"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>
+      <strong>This is not legal advice.</strong> Living in a province where a
+      case was started does not by itself make you a class member. Read the
+      decision, or contact class counsel named on it.
+    </p>
+    <p>
+      Canadian decisions: <a href="https://www.canlii.org/" target="_blank" rel="noopener">CanLII</a>,
+      the Canadian Legal Information Institute.
+      Canadian filings: <a href="https://cbaapps.org/ClassAction/Search.aspx" target="_blank" rel="noopener">CBA
+      National Class Action Database</a> and the
+      <a href="https://www.registredesactionscollectives.quebec/" target="_blank" rel="noopener">Registre
+      des actions collectives</a>.
+      US dockets: <a href="https://www.courtlistener.com/" target="_blank" rel="noopener">CourtListener</a>
+      RECAP, by the Free Law Project.
+    </p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var PROVINCES = [
+    { code: "AB", name: "Alberta", jId: "ab", superior: "Court of King's Bench of Alberta", appeal: "Court of Appeal of Alberta", cite: "2026 ABKB 123" },
+    { code: "BC", name: "British Columbia", jId: "bc", superior: "Supreme Court of British Columbia", appeal: "Court of Appeal for British Columbia", cite: "2026 BCSC 123" },
+    { code: "MB", name: "Manitoba", jId: "mb", superior: "Court of King's Bench of Manitoba", appeal: "Court of Appeal of Manitoba", cite: "2026 MBKB 123" },
+    { code: "NB", name: "New Brunswick", jId: "nb", superior: "Court of King's Bench of New Brunswick", appeal: "Court of Appeal of New Brunswick", cite: "2026 NBKB 123" },
+    { code: "NL", name: "Newfoundland and Labrador", jId: "nl", superior: "Supreme Court of Newfoundland and Labrador", appeal: "Court of Appeal of Newfoundland and Labrador", cite: "2026 NLSC 123" },
+    { code: "NS", name: "Nova Scotia", jId: "ns", superior: "Supreme Court of Nova Scotia", appeal: "Nova Scotia Court of Appeal", cite: "2026 NSSC 123" },
+    { code: "NT", name: "Northwest Territories", jId: "nt", superior: "Supreme Court of the Northwest Territories", appeal: "Court of Appeal of the Northwest Territories", cite: "2026 NWTSC 123" },
+    { code: "NU", name: "Nunavut", jId: "nu", superior: "Nunavut Court of Justice", appeal: "Court of Appeal of Nunavut", cite: "2026 NUCJ 123" },
+    { code: "ON", name: "Ontario", jId: "on", superior: "Ontario Superior Court of Justice", appeal: "Court of Appeal for Ontario", cite: "2026 ONSC 123" },
+    { code: "PE", name: "Prince Edward Island", jId: "pe", superior: "Supreme Court of Prince Edward Island", appeal: "PEI Court of Appeal", cite: "2026 PESC 123" },
+    { code: "QC", name: "Quebec", jId: "qc", superior: "Superior Court of Quebec", appeal: "Quebec Court of Appeal", cite: "2026 QCCS 123" },
+    { code: "SK", name: "Saskatchewan", jId: "sk", superior: "Court of King's Bench for Saskatchewan", appeal: "Court of Appeal for Saskatchewan", cite: "2026 SKKB 123" },
+    { code: "YT", name: "Yukon", jId: "yk", superior: "Supreme Court of Yukon", appeal: "Court of Appeal of Yukon", cite: "2026 YKSC 123" }
+  ];
+
+  // Search vocabulary differs by province: Quebec authorizes an "action
+  // collective"; everywhere else a "class proceeding" is certified.
+  var TOPICS = [
+    { key: "privacy", label: "Data breach & privacy", en: "\"privacy breach\" OR \"data breach\"", fr: "\"vie privée\" OR \"renseignements personnels\"", cba: "Breach of Privacy" },
+    { key: "consumer", label: "Consumer protection", en: "\"consumer protection\" OR \"false advertising\"", fr: "\"protection du consommateur\"", cba: "Consumer Protection" },
+    { key: "employment", label: "Wages & employment", en: "overtime OR \"employment standards\"", fr: "\"heures supplémentaires\" OR \"normes du travail\"", cba: "Employment" },
+    { key: "securities", label: "Securities & investors", en: "securities OR shareholder", fr: "\"valeurs mobilières\" OR actionnaire", cba: "Securities" },
+    { key: "competition", label: "Price fixing", en: "\"Competition Act\" OR \"price fixing\"", fr: "concurrence OR \"fixation des prix\"", cba: "Price Fixing" },
+    { key: "product", label: "Defective products", en: "\"product liability\" OR defective OR recall", fr: "\"produit défectueux\" OR \"vice caché\"", cba: "Product Liability" },
+    { key: "banking", label: "Banking & fees", en: "bank OR fees OR credit", fr: "banque OR \"frais bancaires\"", cba: "Banking" },
+    { key: "insurance", label: "Insurance", en: "insurance OR insurer OR benefits", fr: "assurance OR assureur", cba: "Insurance" }
+  ];
+
+  var US_STATES = [
+    ["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
+    ["CO","Colorado"],["CT","Connecticut"],["DE","Delaware"],["DC","District of Columbia"],
+    ["FL","Florida"],["GA","Georgia"],["HI","Hawaii"],["ID","Idaho"],["IL","Illinois"],
+    ["IN","Indiana"],["IA","Iowa"],["KS","Kansas"],["KY","Kentucky"],["LA","Louisiana"],
+    ["ME","Maine"],["MD","Maryland"],["MA","Massachusetts"],["MI","Michigan"],["MN","Minnesota"],
+    ["MS","Mississippi"],["MO","Missouri"],["MT","Montana"],["NE","Nebraska"],["NV","Nevada"],
+    ["NH","New Hampshire"],["NJ","New Jersey"],["NM","New Mexico"],["NY","New York"],
+    ["NC","North Carolina"],["ND","North Dakota"],["OH","Ohio"],["OK","Oklahoma"],["OR","Oregon"],
+    ["PA","Pennsylvania"],["RI","Rhode Island"],["SC","South Carolina"],["SD","South Dakota"],
+    ["TN","Tennessee"],["TX","Texas"],["UT","Utah"],["VT","Vermont"],["VA","Virginia"],
+    ["WA","Washington"],["WV","West Virginia"],["WI","Wisconsin"],["WY","Wyoming"]
+  ];
+  var US_COURTS = {
+    AL:["alnd","almd","alsd"],AK:["akd"],AZ:["azd"],AR:["ared","arwd"],
+    CA:["cand","cacd","caed","casd"],CO:["cod"],CT:["ctd"],DE:["ded"],DC:["dcd"],
+    FL:["flsd","flmd","flnd"],GA:["gand","gamd","gasd"],HI:["hid"],ID:["idd"],
+    IL:["ilnd","ilcd","ilsd"],IN:["innd","insd"],IA:["iand","iasd"],KS:["ksd"],
+    KY:["kyed","kywd"],LA:["laed","lamd","lawd"],ME:["med"],MD:["mdd"],MA:["mad"],
+    MI:["mied","miwd"],MN:["mnd"],MS:["msnd","mssd"],MO:["moed","mowd"],MT:["mtd"],
+    NE:["ned"],NV:["nvd"],NH:["nhd"],NJ:["njd"],NM:["nmd"],
+    NY:["nysd","nyed","nynd","nywd"],NC:["nced","ncmd","ncwd"],ND:["ndd"],
+    OH:["ohnd","ohsd"],OK:["okwd","oknd","oked"],OR:["ord"],
+    PA:["paed","pamd","pawd"],RI:["rid"],SC:["scd"],SD:["sdd"],
+    TN:["tned","tnmd","tnwd"],TX:["txsd","txnd","txed","txwd"],UT:["utd"],
+    VT:["vtd"],VA:["vaed","vawd"],WA:["wawd","waed"],WV:["wvnd","wvsd"],
+    WI:["wied","wiwd"],WY:["wyd"]
+  };
+
+  var province = PROVINCES.find(function (p) { return p.code === "ON"; });
+  var chosen = [];
+
+  var railEl = document.getElementById("provinces");
+  var courtsEl = document.getElementById("courts");
+  var topicsEl = document.getElementById("topics");
+  var sourcesEl = document.getElementById("sources");
+  var introEl = document.getElementById("source-intro");
+
+  function el(tag, cls, text) {
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text != null) node.textContent = text;
+    return node;
+  }
+
+  /* ---------- province rail ---------- */
+  PROVINCES.forEach(function (p) {
+    var b = el("button", "prov", p.name);
+    b.type = "button";
+    b.setAttribute("aria-pressed", p.code === province.code ? "true" : "false");
+    b.addEventListener("click", function () {
+      province = p;
+      railEl.querySelectorAll(".prov").forEach(function (other, i) {
+        other.setAttribute("aria-pressed", PROVINCES[i].code === p.code ? "true" : "false");
+      });
+      render();
+    });
+    railEl.appendChild(b);
+  });
+
+  /* ---------- topics ---------- */
+  TOPICS.forEach(function (t) {
+    var b = el("button", "topic", t.label);
+    b.type = "button";
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", function () {
+      var i = chosen.indexOf(t.key);
+      if (i === -1) { chosen.push(t.key); b.setAttribute("aria-pressed", "true"); }
+      else { chosen.splice(i, 1); b.setAttribute("aria-pressed", "false"); }
+      render();
+    });
+    topicsEl.appendChild(b);
+  });
+
+  /* ---------- query building ---------- */
+  function picked() {
+    return TOPICS.filter(function (t) { return chosen.indexOf(t.key) !== -1; });
+  }
+
+  function baseTerms() {
+    // Quebec's Code of Civil Procedure uses different words from the common
+    // law provinces' Class Proceedings Acts.
+    return province.code === "QC"
+      ? "(\"action collective\" OR \"recours collectif\")"
+      : "(\"class proceeding\" OR \"class action\")";
+  }
+
+  function canliiQuery() {
+    var parts = [baseTerms()];
+    var sel = picked();
+    if (sel.length) {
+      var terms = sel.map(function (t) {
+        return province.code === "QC" ? t.fr : t.en;
+      });
+      parts.push("(" + terms.join(" OR ") + ")");
+    }
+    return parts.join(" AND ");
+  }
+
+  function canliiUrl() {
+    return "https://www.canlii.org/en/#search/type=decision&jId=" +
+      encodeURIComponent(province.jId) +
+      "&text=" + encodeURIComponent(canliiQuery());
+  }
+
+  /* ---------- render ---------- */
+  function renderCourts() {
+    courtsEl.textContent = "";
+    [
+      ["Starts here", province.superior, province.cite],
+      ["On appeal", province.appeal, null],
+      ["Federal claims", "Federal Court of Canada", "2026 FC 123"]
+    ].forEach(function (row) {
+      var r = el("div", "court-row");
+      r.appendChild(el("div", "court-role", row[0]));
+      r.appendChild(el("div", "court-name", row[1]));
+      if (row[2]) r.appendChild(el("span", "cite", row[2]));
+      courtsEl.appendChild(r);
+    });
+  }
+
+  function sourceCard(opts) {
+    var card = el("article", "panel source");
+    var head = el("div", "source-head");
+    head.appendChild(el("h3", null, opts.title));
+    head.appendChild(el("span", "tag " + opts.tagClass, opts.tag));
+    card.appendChild(head);
+    card.appendChild(el("p", null, opts.blurb));
+
+    if (opts.facts) {
+      var dl = document.createElement("dl");
+      opts.facts.forEach(function (f) {
+        dl.appendChild(el("dt", null, f[0]));
+        dl.appendChild(el("dd", null, f[1]));
+      });
+      card.appendChild(dl);
+    }
+
+    var actions = el("div", "actions");
+    var a = el("a", "go", opts.cta);
+    a.href = opts.href; a.target = "_blank"; a.rel = "noopener";
+    actions.appendChild(a);
+    card.appendChild(actions);
+
+    if (opts.preview) {
+      card.appendChild(el("div", "query-preview", opts.preview));
+    }
+    if (opts.hint) {
+      var h = el("p", "hint");
+      h.innerHTML = opts.hint;
+      card.appendChild(h);
+    }
+    return card;
+  }
+
+  function render() {
+    renderCourts();
+    introEl.textContent =
+      "Searches below are built for " + province.name +
+      (picked().length ? " and the subjects you picked." : ".");
+
+    sourcesEl.textContent = "";
+
+    sourcesEl.appendChild(sourceCard({
+      title: "CanLII",
+      tag: "Decisions",
+      tagClass: "decisions",
+      blurb: "Every reported decision from every Canadian court, free. Best for " +
+             "finding class proceedings a judge has already ruled on — " +
+             (province.code === "QC" ? "authorization" : "certification") +
+             ", settlement approval, appeals.",
+      facts: [
+        ["Scoped to", province.name],
+        ["Searching for", province.code === "QC" ? "action collective" : "class proceeding"]
+      ],
+      cta: "Search CanLII",
+      href: canliiUrl(),
+      preview: canliiQuery()
+    }));
+
+    var sel = picked();
+    var subjects = sel.map(function (t) { return t.cba; });
+    sourcesEl.appendChild(sourceCard({
+      title: "CBA National Class Action Database",
+      tag: "Filings",
+      tagClass: "filings",
+      blurb: "The Canadian Bar Association's registry of class actions filed " +
+             "since 2007, with the pleadings lawyers have submitted. This is " +
+             "where a newly filed claim shows up first.",
+      facts: [
+        ["Set Jurisdiction to", province.name],
+        ["Set Subject to", subjects.length ? subjects.join(" / ") : "All Subjects"]
+      ],
+      cta: "Open the database",
+      href: "https://cbaapps.org/ClassAction/Search.aspx",
+      hint: "Its search is a form, not a link, so it cannot be pre-filled. " +
+            "Use the two settings above. <strong>Submissions are voluntary</strong>, " +
+            "so treat it as a strong lead, not a complete list."
+    }));
+
+    if (province.code === "QC") {
+      sourcesEl.appendChild(sourceCard({
+        title: "Registre des actions collectives",
+        tag: "Filings · Quebec",
+        tagClass: "filings",
+        blurb: "Quebec's official registry of every action collective filed " +
+               "since 2009, run by the Ministre de la Justice. For Quebec this " +
+               "is the authoritative record, and the one to check first.",
+        facts: [["Covers", "Quebec filings from 1 January 2009"]],
+        cta: "Open the registry",
+        href: "https://www.registredesactionscollectives.quebec/en/Consulter/AfficherResultatConsulterDemande"
+      }));
+    } else {
+      sourcesEl.appendChild(sourceCard({
+        title: "Quebec's registry",
+        tag: "Filings · Quebec only",
+        tagClass: "partial",
+        blurb: "Quebec runs the one official, complete registry of class action " +
+               "filings in Canada. It is worth checking even from " + province.name +
+               ", because national class actions are often filed there too.",
+        facts: [["Covers", "Quebec filings from 1 January 2009"]],
+        cta: "Open the registry",
+        href: "https://www.registredesactionscollectives.quebec/en/Consulter/AfficherResultatConsulterDemande"
+      }));
+    }
+  }
+
+  /* ---------- US live search ---------- */
+  var stateSel = document.getElementById("us-state");
+  US_STATES.forEach(function (s) {
+    var o = document.createElement("option");
+    o.value = s[0]; o.textContent = s[1];
+    if (s[0] === "NY") o.selected = true;
+    stateSel.appendChild(o);
+  });
+
+  var statusEl = document.getElementById("us-status");
+  var resultsEl = document.getElementById("us-results");
+
+  function setStatus(msg, kind) {
+    if (!msg) { statusEl.hidden = true; return; }
+    statusEl.hidden = false;
+    statusEl.className = "status" + (kind ? " " + kind : "");
+    statusEl.textContent = msg;
+  }
+
+  function usDate(days) {
+    var d = new Date(Date.now() - days * 86400000);
+    return ("0" + (d.getMonth() + 1)).slice(-2) + "/" +
+           ("0" + d.getDate()).slice(-2) + "/" + d.getFullYear();
+  }
+
+  document.getElementById("us-search").addEventListener("click", function () {
+    var state = stateSel.value;
+    var courts = US_COURTS[state] || [];
+    var token = document.getElementById("us-token").value.trim();
+    var days = document.getElementById("us-window").value;
+
+    resultsEl.textContent = "";
+    setStatus("Searching federal dockets…", "info");
+
+    var params = new URLSearchParams({
+      type: "r",
+      q: "(\"class action\" OR \"similarly situated\" OR \"class certification\")",
+      court: courts.join(" "),
+      order_by: "dateFiled desc",
+      filed_after: usDate(Number(days))
+    });
+    var opts = { headers: { Accept: "application/json" } };
+    if (token) opts.headers.Authorization = "Token " + token;
+
+    fetch("https://www.courtlistener.com/api/rest/v4/search/?" + params, opts)
+      .then(function (r) {
+        if (r.status === 429) {
+          throw new Error(
+            "CourtListener's anonymous limit (125 searches a day, shared across " +
+            "your network) is used up. Add a free token above to lift it."
+          );
+        }
+        if (r.status === 401 || r.status === 403) {
+          throw new Error("That token was not accepted. Check it and try again.");
+        }
+        if (!r.ok) throw new Error("CourtListener returned HTTP " + r.status + ".");
+        return r.json();
+      })
+      .then(function (data) {
+        var rows = data.results || [];
+        if (!rows.length) {
+          setStatus("No dockets matched in that window. Try a longer one.");
+          return;
+        }
+        setStatus(
+          "Showing " + rows.length + " of " + (data.count || rows.length).toLocaleString() +
+          " matching dockets from " + courts.length + " district court" +
+          (courts.length === 1 ? "" : "s") + ".", "info"
+        );
+        rows.forEach(function (row) {
+          var card = el("article", "panel case");
+          var h = el("h4");
+          var url = row.docket_absolute_url || row.absolute_url;
+          if (url) {
+            var a = el("a", null, row.caseName || "Unnamed docket");
+            a.href = "https://www.courtlistener.com" + url;
+            a.target = "_blank"; a.rel = "noopener";
+            h.appendChild(a);
+          } else {
+            h.textContent = row.caseName || "Unnamed docket";
+          }
+          card.appendChild(h);
+
+          var meta = el("div", "case-meta");
+          [row.court, row.dateFiled ? "Filed " + row.dateFiled : null,
+           row.docketNumber, row.suitNature].forEach(function (bit) {
+            if (bit) meta.appendChild(el("span", null, bit));
+          });
+          card.appendChild(meta);
+          resultsEl.appendChild(card);
+        });
+      })
+      .catch(function (err) {
+        setStatus(err.message || "Could not reach CourtListener.");
+      });
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
